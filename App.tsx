@@ -147,6 +147,7 @@ const App: React.FC = () => {
                 let newBuildings = [...prev.buildings];
                 let newPlayer = {...prev.player};
                 let newResearchedTechnologies = [...prev.researchedTechnologies];
+                let newTroops = [...prev.troops];
 
                 finishedTimers.forEach(timer => {
                     if (timer.type === 'building') {
@@ -158,6 +159,12 @@ const App: React.FC = () => {
                         if (!newResearchedTechnologies.includes(timer.details.name)) {
                             newResearchedTechnologies.push(timer.details.name);
                         }
+                    } else if (timer.type === 'training') {
+                        const troopType = timer.details.name as TroopType;
+                        const count = timer.details.count || 0;
+                        newTroops = newTroops.map(t => 
+                            t.type === troopType ? { ...t, count: t.count + count } : t
+                        );
                     }
                 });
 
@@ -168,6 +175,7 @@ const App: React.FC = () => {
                     buildings: newBuildings,
                     player: newPlayer,
                     researchedTechnologies: newResearchedTechnologies,
+                    troops: newTroops,
                 };
             });
         }, 1000);

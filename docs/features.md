@@ -11,6 +11,7 @@ This document provides a comprehensive list of all features currently implemente
 | **CG-103** | PvE Combat System            | Implemented | 2024-08-05T12:00:00.000Z |
 | **CG-104** | Real-Time Game Loop          | Implemented | 2024-08-05T12:00:00.000Z |
 | **CG-105** | Functional Research System   | Implemented | 2024-08-06T10:00:00.000Z |
+| **CG-106** | Troop Training System        | Implemented | 2024-08-07T14:00:00.000Z |
 
 ---
 
@@ -30,6 +31,9 @@ This document provides a comprehensive list of all features currently implemente
 
 #### CG-105: Functional Research System
 -   **Description:** Players can research technologies from a technology tree in the `Perguruan`. Each technology provides a permanent bonus to the player's economy or military (e.g., increased resource production, troop stat boosts). Research costs resources, takes real time, and supports dependencies between technologies.
+
+#### CG-106: Troop Training System
+-   **Description:** Players can train different types of troops from their military buildings (e.g., `Barak Prajurit`, `Lapangan Panah`). The training process costs resources and takes real time, managed by a dedicated training queue per building. A modal interface allows players to select the quantity of troops to train.
 
 ---
 

@@ -8,7 +8,7 @@ These features are essential to complete the primary gameplay loop and introduce
 
 | ID         | Feature                      | Status      | Implemented On             |
 | :--------- | :--------------------------- | :---------- | :------------------------- |
-| **CG-001** | Troop Training & Management  | Not Started | N/A                        |
+| **CG-001** | Troop Training & Management  | Implemented | 2024-08-07T14:00:00.000Z   |
 | **CG-003** | Warehouse Capacity Logic     | Not Started | N/A                        |
 | **CG-004** | Player vs. Player (PvP) Combat | Not Started | N/A                        |
 

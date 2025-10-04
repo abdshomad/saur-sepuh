@@ -63,7 +63,7 @@ export interface Timer {
     id: number; // Corresponds to building ID or a unique ID for research
     type: 'building' | 'research' | 'training';
     timeLeft: number; // in seconds
-    details: { name: string; level: number }; // BuildingName or Tech ID
+    details: { name: string; level?: number; count?: number }; // BuildingName, Tech ID or TroopType
 }
 
 export interface TechnologyBonus {

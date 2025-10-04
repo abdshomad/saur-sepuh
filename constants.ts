@@ -1,5 +1,56 @@
 import { GameState, BuildingName, TroopType, Resource, Technology } from './types';
 
+export const TROOP_STATS: Record<TroopType, {
+    cost: Partial<Record<Resource, number>>;
+    time: number; // seconds per unit
+    building: BuildingName;
+    attack: number;
+    defense: number;
+    icon: string;
+}> = {
+    [TroopType.PrajuritInfanteri]: {
+        cost: { [Resource.Pangan]: 50, [Resource.BijihBesi]: 10 },
+        time: 15,
+        building: BuildingName.BarakPrajurit,
+        attack: 10,
+        defense: 10,
+        icon: '⚔️',
+    },
+    [TroopType.Pemanah]: {
+        cost: { [Resource.Pangan]: 30, [Resource.Kayu]: 40 },
+        time: 25,
+        building: BuildingName.LapanganPanah,
+        attack: 12,
+        defense: 8,
+        icon: '🏹',
+    },
+    [TroopType.PrajuritBerkuda]: {
+        cost: { [Resource.Pangan]: 100, [Resource.BijihBesi]: 50 },
+        time: 60,
+        building: BuildingName.KandangKuda,
+        attack: 15,
+        defense: 6,
+        icon: '🐎',
+    },
+    [TroopType.MesinPengepung]: {
+        cost: { [Resource.Kayu]: 150, [Resource.Batu]: 150 },
+        time: 180,
+        building: BuildingName.BengkelSenjata,
+        attack: 20,
+        defense: 4,
+        icon: '⚙️',
+    },
+};
+
+export const BUILDING_TO_TROOP_MAP: Partial<Record<BuildingName, TroopType>> = {
+    [BuildingName.BarakPrajurit]: TroopType.PrajuritInfanteri,
+    [BuildingName.LapanganPanah]: TroopType.Pemanah,
+    [BuildingName.KandangKuda]: TroopType.PrajuritBerkuda,
+    [BuildingName.BengkelSenjata]: TroopType.MesinPengepung,
+};
+
+export const MILITARY_BUILDINGS = Object.keys(BUILDING_TO_TROOP_MAP) as BuildingName[];
+
 export const INITIAL_GAME_STATE: GameState = {
     player: {
         name: 'Brama Kumbara',
@@ -32,12 +83,12 @@ export const INITIAL_GAME_STATE: GameState = {
         { id: 12, name: BuildingName.Gudang, level: 1, description: "Melindungi sumber dayamu dari penjarahan.", icon: "📦" },
         { id: 13, name: BuildingName.Tabib, level: 1, description: "Menyembuhkan prajuritmu yang terluka.", icon: "⚕️" },
     ],
-    troops: [
-        { type: TroopType.PrajuritInfanteri, count: 100, attack: 10, defense: 10 },
-        { type: TroopType.Pemanah, count: 0, attack: 12, defense: 8 },
-        { type: TroopType.PrajuritBerkuda, count: 0, attack: 15, defense: 6 },
-        { type: TroopType.MesinPengepung, count: 0, attack: 20, defense: 4 },
-    ],
+    troops: Object.values(TroopType).map(type => ({
+        type: type,
+        count: type === TroopType.PrajuritInfanteri ? 100 : 0,
+        attack: TROOP_STATS[type].attack,
+        defense: TROOP_STATS[type].defense,
+    })),
     timers: [],
     researchedTechnologies: [],
 };
