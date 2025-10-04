@@ -8,27 +8,11 @@ These features are essential to complete the primary gameplay loop and introduce
 
 | ID         | Feature                      | Status      | Implemented On             |
 | :--------- | :--------------------------- | :---------- | :------------------------- |
-| **CG-001** | Troop Training & Management  | Implemented | 2024-08-07T14:00:00.000Z   |
-| **CG-003** | Warehouse Capacity Logic     | Implemented | 2024-08-08T10:00:00.000Z   |
 | **CG-004** | Player vs. Player (PvP) Combat | Not Started | N/A                        |
 
 ---
 
 ### Feature Details
-
-#### CG-001: Troop Training & Management
--   **Description:** Implement the ability for players to train troops from military buildings.
--   **Tasks:**
-    -   Create UI modals for `Barak Prajurit`, `Lapangan Panah`, etc. to select troop types and quantity.
-    -   Add a `training` type to the global timer system.
-    -   Update the `GameState` to reflect newly trained troops upon timer completion.
-    -   Display total army composition and power in a dedicated screen or view.
-
-#### CG-003: Warehouse Capacity Logic
--   **Description:** Enforce the resource storage limit determined by `Gudang` buildings.
--   **Tasks:**
-    -   Update the main game loop to dynamically calculate `warehouseCapacity` based on Gudang level.
-    -   Provide clear UI feedback to the player when a resource is capped.
 
 #### CG-004: Player vs. Player (PvP) Combat
 -   **Description:** Design and implement a system for players to attack each other's kingdoms.

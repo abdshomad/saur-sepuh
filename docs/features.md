@@ -12,6 +12,7 @@ This document provides a comprehensive list of all features currently implemente
 | **CG-104** | Real-Time Game Loop          | Implemented | 2024-08-05T12:00:00.000Z |
 | **CG-105** | Functional Research System   | Implemented | 2024-08-06T10:00:00.000Z |
 | **CG-106** | Troop Training System        | Implemented | 2024-08-07T14:00:00.000Z |
+| **CG-107** | Warehouse Capacity Logic     | Implemented | 2024-08-08T10:00:00.000Z   |
 
 ---
 
@@ -34,6 +35,9 @@ This document provides a comprehensive list of all features currently implemente
 
 #### CG-106: Troop Training System
 -   **Description:** Players can train different types of troops from their military buildings (e.g., `Barak Prajurit`, `Lapangan Panah`). The training process costs resources and takes real time, managed by a dedicated training queue per building. A modal interface allows players to select the quantity of troops to train.
+
+#### CG-107: Warehouse Capacity Logic
+-   **Description:** The game enforces a resource storage limit based on the level of the `Gudang` (Warehouse) buildings. The main game loop dynamically calculates the total `warehouseCapacity`, and resource generation is capped at this limit. The UI in the header clearly displays the current resource amount versus the capacity.
 
 ---
 
