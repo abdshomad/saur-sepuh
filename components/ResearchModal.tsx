@@ -1,18 +1,15 @@
 import React from 'react';
-import { Building, Resource } from '../types';
-import { getUpgradeCost } from '../constants';
+import { Technology, Resource } from '../types';
 
-interface UpgradeModalProps {
-    building: Building;
+interface ResearchModalProps {
+    tech: Technology;
     onClose: () => void;
-    onConfirm: (building: Building, cost: number, resource: Resource, time: number) => void;
+    onConfirm: (tech: Technology) => void;
     resources: Record<Resource, number>;
-    buildingSpeedBonus: number;
 }
 
-export const UpgradeModal: React.FC<UpgradeModalProps> = ({ building, onClose, onConfirm, resources, buildingSpeedBonus }) => {
-    const { cost, resource, time } = getUpgradeCost(building.name, building.level + 1, buildingSpeedBonus);
-    const hasEnoughResources = resources[resource] >= cost;
+export const ResearchModal: React.FC<ResearchModalProps> = ({ tech, onClose, onConfirm, resources }) => {
+    const hasEnoughResources = resources[tech.cost.resource] >= tech.cost.amount;
 
     const resourceIcons: Record<Resource, string> = {
         [Resource.Pangan]: "🍞",
@@ -31,20 +28,24 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ building, onClose, o
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-lg p-8 shadow-2xl border border-yellow-500 max-w-md w-full">
-                <h2 className="text-2xl font-bold mb-2 text-yellow-300">Tingkatkan {building.name}</h2>
-                <p className="text-lg mb-6">Tingkatkan dari Tingkat {building.level} ke <span className="text-green-400 font-bold">Tingkat {building.level + 1}</span></p>
+            <div className="bg-gray-800 rounded-lg p-8 shadow-2xl border border-blue-500 max-w-md w-full">
+                <h2 className="text-2xl font-bold mb-2 text-blue-300">Teliti: {tech.name}</h2>
+                <p className="text-lg mb-6">{tech.description}</p>
 
                 <div className="space-y-4 mb-8">
+                     <div className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
+                        <span className="text-gray-300">Bonus:</span>
+                        <span className="font-semibold text-green-400">{tech.bonus.percentage}% {tech.bonus.type.replace('_', ' ')}</span>
+                    </div>
                     <div className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
                         <span className="text-gray-300">Waktu:</span>
-                        <span className="font-semibold text-white">{formatTime(time)}</span>
+                        <span className="font-semibold text-white">{formatTime(tech.researchTime)}</span>
                     </div>
                     <div className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
                         <span className="text-gray-300">Biaya:</span>
                         <div className={`font-semibold flex items-center ${hasEnoughResources ? 'text-white' : 'text-red-500'}`}>
-                            <span className="text-xl mr-2">{resourceIcons[resource]}</span>
-                            {cost.toLocaleString('id-ID')} {resource}
+                            <span className="text-xl mr-2">{resourceIcons[tech.cost.resource]}</span>
+                            {tech.cost.amount.toLocaleString('id-ID')} {tech.cost.resource}
                         </div>
                     </div>
                 </div>
@@ -57,11 +58,11 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ building, onClose, o
                         Batal
                     </button>
                     <button
-                        onClick={() => onConfirm(building, cost, resource, time)}
+                        onClick={() => onConfirm(tech)}
                         disabled={!hasEnoughResources}
                         className="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-500 transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed"
                     >
-                        Tingkatkan
+                        Mulai Teliti
                     </button>
                 </div>
             </div>

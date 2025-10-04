@@ -4,6 +4,10 @@ import { GameState, Troop, TroopType, Resource } from '../types';
 interface CombatViewProps {
     gameState: GameState;
     setGameState: React.Dispatch<React.SetStateAction<GameState>>;
+    bonuses: {
+        troopAttack: Record<TroopType, number>;
+        troopDefense: Record<TroopType, number>;
+    };
 }
 
 interface BattleReport {
@@ -22,11 +26,15 @@ const MONSTERS = [
     { name: "Raksasa Batu", power: 8000, type: TroopType.MesinPengepung, rewards: { exp: 800, res: "5000 Batu" } },
 ];
 
-export const CombatView: React.FC<CombatViewProps> = ({ gameState, setGameState }) => {
+export const CombatView: React.FC<CombatViewProps> = ({ gameState, setGameState, bonuses }) => {
     const [battleReport, setBattleReport] = useState<BattleReport | null>(null);
 
     const calculateArmyPower = (troops: Troop[]): number => {
-        return troops.reduce((total, troop) => total + troop.count * troop.attack, 0);
+        return troops.reduce((total, troop) => {
+            const attackBonus = bonuses.troopAttack[troop.type] || 0;
+            const finalAttack = troop.attack * (1 + attackBonus / 100);
+            return total + troop.count * finalAttack;
+        }, 0);
     };
     
     const troopCounter: Record<TroopType, TroopType> = {
@@ -43,7 +51,9 @@ export const CombatView: React.FC<CombatViewProps> = ({ gameState, setGameState 
         let finalPlayerPower = playerArmyPower;
         gameState.troops.forEach(troop => {
             if (troopCounter[troop.type] === monster.type) {
-                finalPlayerPower += (troop.count * troop.attack) * 0.5; // 50% bonus
+                const attackBonus = bonuses.troopAttack[troop.type] || 0;
+                const finalAttack = troop.attack * (1 + attackBonus / 100);
+                finalPlayerPower += (troop.count * finalAttack) * 0.5; // 50% bonus
             }
         });
 

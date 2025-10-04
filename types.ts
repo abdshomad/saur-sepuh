@@ -30,7 +30,7 @@ export enum TroopType {
 }
 
 export enum View {
-    Kota = 'Kota',
+    Kerajaan = 'Kerajaan',
     Pertempuran = 'Pertempuran',
     Penelitian = 'Penelitian',
 }
@@ -60,10 +60,33 @@ export interface Troop {
 }
 
 export interface Timer {
-    id: number; // Corresponds to building ID or research ID
+    id: number; // Corresponds to building ID or a unique ID for research
     type: 'building' | 'research' | 'training';
     timeLeft: number; // in seconds
-    details: { name: string; level: number };
+    details: { name: string; level: number }; // BuildingName or Tech ID
+}
+
+export interface TechnologyBonus {
+    type: 'RESOURCE_PRODUCTION' | 'TROOP_ATTACK' | 'TROOP_DEFENSE' | 'BUILDING_SPEED';
+    resource?: Resource;
+    troopType?: TroopType;
+    percentage: number;
+}
+
+export interface Technology {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    category: 'Kemajuan' | 'Militer' | 'Pertahanan' | 'Medis';
+    cost: {
+        resource: Resource;
+        amount: number;
+    };
+    researchTime: number; // in seconds
+    bonus: TechnologyBonus;
+    dependencies: string[]; // array of technology IDs
+    requiredBuildingLevel: { name: BuildingName; level: number };
 }
 
 export interface GameState {
@@ -73,6 +96,7 @@ export interface GameState {
     buildings: Building[];
     troops: Troop[];
     timers: Timer[];
+    researchedTechnologies: string[];
 }
 
 export interface GameEvent {

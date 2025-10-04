@@ -6,17 +6,18 @@ This document provides a comprehensive list of all features currently implemente
 
 | ID         | Feature                      | Status      | Implemented On             |
 | :--------- | :--------------------------- | :---------- | :------------------------- |
-| **CG-101** | City Building & Upgrading    | Implemented | 2024-08-05T12:00:00.000Z |
+| **CG-101** | Kingdom Building & Upgrading | Implemented | 2024-08-05T12:00:00.000Z |
 | **CG-102** | Real-Time Resource Generation| Implemented | 2024-08-05T12:00:00.000Z |
 | **CG-103** | PvE Combat System            | Implemented | 2024-08-05T12:00:00.000Z |
 | **CG-104** | Real-Time Game Loop          | Implemented | 2024-08-05T12:00:00.000Z |
+| **CG-105** | Functional Research System   | Implemented | 2024-08-06T10:00:00.000Z |
 
 ---
 
 ### Feature Details
 
-#### CG-101: City Building & Upgrading
--   **Description:** Players can construct and upgrade a variety of buildings within their city. Each upgrade costs resources and takes a specific amount of real time, managed by a global timer system. The UI provides modals for upgrade confirmation and shows active timers on building cards.
+#### CG-101: Kingdom Building & Upgrading
+-   **Description:** Players can construct and upgrade a variety of buildings within their kingdom. Each upgrade costs resources and takes a specific amount of real time, managed by a global timer system. The UI provides modals for upgrade confirmation and shows active timers on building cards.
 
 #### CG-102: Real-Time Resource Generation
 -   **Description:** The game features four primary resources (Pangan, Kayu, Batu, Bijih Besi) that are generated passively in real-time. Production rates are tied to the level of corresponding resource buildings (Sawah, Penggergajian, etc.).
@@ -26,6 +27,9 @@ This document provides a comprehensive list of all features currently implemente
 
 #### CG-104: Real-Time Game Loop
 -   **Description:** A central game loop updates the game state every second. This loop is responsible for incrementing resources, decrementing timers, and processing the completion of upgrades.
+
+#### CG-105: Functional Research System
+-   **Description:** Players can research technologies from a technology tree in the `Perguruan`. Each technology provides a permanent bonus to the player's economy or military (e.g., increased resource production, troop stat boosts). Research costs resources, takes real time, and supports dependencies between technologies.
 
 ---
 

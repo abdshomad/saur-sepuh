@@ -7,9 +7,10 @@ import { Timer } from '../types';
 interface CityViewProps {
     gameState: GameState;
     setGameState: React.Dispatch<React.SetStateAction<GameState>>;
+    buildingSpeedBonus: number;
 }
 
-export const CityView: React.FC<CityViewProps> = ({ gameState, setGameState }) => {
+export const CityView: React.FC<CityViewProps> = ({ gameState, setGameState, buildingSpeedBonus }) => {
     const [selectedBuilding, setSelectedBuilding] = useState<BuildingType | null>(null);
 
     const handleUpgradeClick = (building: BuildingType) => {
@@ -57,6 +58,7 @@ export const CityView: React.FC<CityViewProps> = ({ gameState, setGameState }) =
                                 building={building}
                                 onUpgradeClick={handleUpgradeClick}
                                 timer={timer}
+                                buildingSpeedBonus={buildingSpeedBonus}
                             />
                         );
                  })}
@@ -68,6 +70,7 @@ export const CityView: React.FC<CityViewProps> = ({ gameState, setGameState }) =
                     onClose={() => setSelectedBuilding(null)}
                     onConfirm={handleConfirmUpgrade}
                     resources={gameState.resources}
+                    buildingSpeedBonus={buildingSpeedBonus}
                 />
             )}
         </div>

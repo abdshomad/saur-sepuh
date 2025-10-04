@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Building, GameState, Resource, Troop, View, GameEvent } from './types';
-import { INITIAL_GAME_STATE } from './constants';
+import { GameState, Resource, View, GameEvent, TroopType } from './types';
+import { INITIAL_GAME_STATE, TECHNOLOGY_TREE } from './constants';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { CityView } from './components/CityView';
@@ -9,9 +9,46 @@ import { ResearchView } from './components/ResearchView';
 import { EventModal } from './components/EventModal';
 import { generateGameEvent } from './services/geminiService';
 
+const calculateBonuses = (researchedTechnologies: string[]) => {
+    const bonuses = {
+        resourceProduction: {} as Record<Resource, number>,
+        troopAttack: {} as Record<TroopType, number>,
+        troopDefense: {} as Record<TroopType, number>,
+        buildingSpeed: 0,
+    };
+
+    researchedTechnologies.forEach(techId => {
+        const tech = TECHNOLOGY_TREE[techId];
+        if (!tech) return;
+        switch (tech.bonus.type) {
+            case 'RESOURCE_PRODUCTION':
+                if (tech.bonus.resource) {
+                    bonuses.resourceProduction[tech.bonus.resource] = (bonuses.resourceProduction[tech.bonus.resource] || 0) + tech.bonus.percentage;
+                }
+                break;
+            case 'TROOP_ATTACK':
+                 if (tech.bonus.troopType) {
+                    bonuses.troopAttack[tech.bonus.troopType] = (bonuses.troopAttack[tech.bonus.troopType] || 0) + tech.bonus.percentage;
+                }
+                break;
+            case 'TROOP_DEFENSE':
+                 if (tech.bonus.troopType) {
+                    bonuses.troopDefense[tech.bonus.troopType] = (bonuses.troopDefense[tech.bonus.troopType] || 0) + tech.bonus.percentage;
+                }
+                break;
+            case 'BUILDING_SPEED':
+                bonuses.buildingSpeed += tech.bonus.percentage;
+                break;
+        }
+    });
+
+    return bonuses;
+};
+
+
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
-    const [view, setView] = useState<View>(View.Kota);
+    const [view, setView] = useState<View>(View.Kerajaan);
     const [activeEvent, setActiveEvent] = useState<GameEvent | null>(null);
     const [isEventLoading, setIsEventLoading] = useState<boolean>(false);
 
@@ -33,6 +70,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const gameLoop = setInterval(() => {
             setGameState(prev => {
+                const currentBonuses = calculateBonuses(prev.researchedTechnologies);
                 const newResources = { ...prev.resources };
                 let panganProduction = 0;
                 let kayuProduction = 0;
@@ -40,11 +78,23 @@ const App: React.FC = () => {
                 let bijihBesiProduction = 0;
 
                 prev.buildings.forEach(building => {
+                    let production = 0;
+                    let resourceType: Resource | null = null;
                     switch (building.name) {
-                        case 'Sawah': panganProduction += building.level * 5; break;
-                        case 'Penggergajian': kayuProduction += building.level * 5; break;
-                        case 'Tambang Batu': batuProduction += building.level * 5; break;
-                        case 'Tambang Besi': bijihBesiProduction += building.level * 5; break;
+                        case 'Sawah': production = building.level * 5; resourceType = Resource.Pangan; break;
+                        case 'Penggergajian': production = building.level * 5; resourceType = Resource.Kayu; break;
+                        case 'Tambang Batu': production = building.level * 5; resourceType = Resource.Batu; break;
+                        case 'Tambang Besi': production = building.level * 5; resourceType = Resource.BijihBesi; break;
+                    }
+
+                    if (resourceType) {
+                        const bonusPercentage = currentBonuses.resourceProduction[resourceType] || 0;
+                        production *= (1 + bonusPercentage / 100);
+
+                        if (resourceType === Resource.Pangan) panganProduction += production;
+                        else if (resourceType === Resource.Kayu) kayuProduction += production;
+                        else if (resourceType === Resource.Batu) batuProduction += production;
+                        else if (resourceType === Resource.BijihBesi) bijihBesiProduction += production;
                     }
                 });
 
@@ -58,12 +108,17 @@ const App: React.FC = () => {
                 
                 let newBuildings = [...prev.buildings];
                 let newPlayer = {...prev.player};
+                let newResearchedTechnologies = [...prev.researchedTechnologies];
 
                 finishedTimers.forEach(timer => {
                     if (timer.type === 'building') {
                         newBuildings = newBuildings.map(b => b.id === timer.id ? { ...b, level: b.level + 1 } : b);
                         if (timer.details.name === 'Istana') {
                             newPlayer.istanaLevel += 1;
+                        }
+                    } else if (timer.type === 'research') {
+                        if (!newResearchedTechnologies.includes(timer.details.name)) {
+                            newResearchedTechnologies.push(timer.details.name);
                         }
                     }
                 });
@@ -74,6 +129,7 @@ const App: React.FC = () => {
                     timers: newTimers,
                     buildings: newBuildings,
                     player: newPlayer,
+                    researchedTechnologies: newResearchedTechnologies,
                 };
             });
         }, 1000);
@@ -104,15 +160,16 @@ const App: React.FC = () => {
     };
 
     const renderView = () => {
+        const bonuses = calculateBonuses(gameState.researchedTechnologies);
         switch (view) {
-            case View.Kota:
-                return <CityView gameState={gameState} setGameState={setGameState} />;
+            case View.Kerajaan:
+                return <CityView gameState={gameState} setGameState={setGameState} buildingSpeedBonus={bonuses.buildingSpeed} />;
             case View.Pertempuran:
-                return <CombatView gameState={gameState} setGameState={setGameState} />;
+                return <CombatView gameState={gameState} setGameState={setGameState} bonuses={{ troopAttack: bonuses.troopAttack, troopDefense: bonuses.troopDefense }} />;
             case View.Penelitian:
-                return <ResearchView />;
+                return <ResearchView gameState={gameState} setGameState={setGameState} />;
             default:
-                return <CityView gameState={gameState} setGameState={setGameState} />;
+                return <CityView gameState={gameState} setGameState={setGameState} buildingSpeedBonus={bonuses.buildingSpeed} />;
         }
     };
 

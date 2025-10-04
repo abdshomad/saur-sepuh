@@ -7,10 +7,13 @@ interface BuildingCardProps {
     building: Building;
     onUpgradeClick: (building: Building) => void;
     timer?: Timer;
+    buildingSpeedBonus: number;
 }
 
-export const BuildingCard: React.FC<BuildingCardProps> = ({ building, onUpgradeClick, timer }) => {
-    const { cost, resource, time } = getUpgradeCost(building.name, building.level + 1);
+export const BuildingCard: React.FC<BuildingCardProps> = ({ building, onUpgradeClick, timer, buildingSpeedBonus }) => {
+    // We need the original time for progress calculation, and the potentially modified time for display/logic
+    const originalTime = getUpgradeCost(building.name, building.level + 1, 0).time;
+    const { time } = getUpgradeCost(building.name, building.level + 1, buildingSpeedBonus);
     
     const formatTime = (seconds: number) => {
         const m = Math.floor(seconds / 60);
@@ -35,7 +38,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ building, onUpgradeC
                 <div>
                     <p className="text-center text-yellow-400 mb-2">Meningkatkan ke Tingkat {timer.details.level}...</p>
                     <ProgressBar 
-                        progress={((time - timer.timeLeft) / time) * 100} 
+                        progress={((originalTime - timer.timeLeft) / originalTime) * 100} 
                         label={formatTime(timer.timeLeft)}
                     />
                 </div>

@@ -1,4 +1,4 @@
-import { GameState, BuildingName, TroopType, Resource } from './types';
+import { GameState, BuildingName, TroopType, Resource, Technology } from './types';
 
 export const INITIAL_GAME_STATE: GameState = {
     player: {
@@ -39,6 +39,7 @@ export const INITIAL_GAME_STATE: GameState = {
         { type: TroopType.MesinPengepung, count: 0, attack: 20, defense: 4 },
     ],
     timers: [],
+    researchedTechnologies: [],
 };
 
 export const BUILDING_UPGRADE_COST: Record<BuildingName, { resource: Resource, baseCost: number, growthFactor: number }> = {
@@ -57,10 +58,74 @@ export const BUILDING_UPGRADE_COST: Record<BuildingName, { resource: Resource, b
     [BuildingName.Tabib]: { resource: Resource.Batu, baseCost: 300, growthFactor: 1.8 },
 };
 
-export const getUpgradeCost = (buildingName: BuildingName, level: number) => {
+export const getUpgradeCost = (buildingName: BuildingName, level: number, buildingSpeedBonus: number = 0) => {
     const config = BUILDING_UPGRADE_COST[buildingName];
     if (!config) return { resource: Resource.Pangan, cost: Infinity, time: Infinity };
     const cost = Math.floor(config.baseCost * Math.pow(config.growthFactor, level - 1));
-    const time = Math.floor(cost / 100) * 5; // 5 seconds per 100 resource cost
+    let time = Math.floor(cost / 100) * 5; // 5 seconds per 100 resource cost
+    time = Math.floor(time / (1 + buildingSpeedBonus / 100)); // Apply bonus
     return { resource: config.resource, cost, time };
+};
+
+export const TECHNOLOGY_TREE: Record<string, Technology> = {
+    'KEMAJUAN_1': {
+        id: 'KEMAJUAN_1',
+        name: "Irigasi Modern",
+        description: "Meningkatkan produksi Pangan sebesar 10%.",
+        icon: "💧",
+        category: 'Kemajuan',
+        cost: { resource: Resource.Kayu, amount: 2000 },
+        researchTime: 180, // 3 minutes
+        bonus: { type: 'RESOURCE_PRODUCTION', resource: Resource.Pangan, percentage: 10 },
+        dependencies: [],
+        requiredBuildingLevel: { name: BuildingName.Perguruan, level: 1 },
+    },
+    'KEMAJUAN_2': {
+        id: 'KEMAJUAN_2',
+        name: "Gergaji Besi",
+        description: "Meningkatkan produksi Kayu sebesar 10%.",
+        icon: "🪚",
+        category: 'Kemajuan',
+        cost: { resource: Resource.Pangan, amount: 2000 },
+        researchTime: 180, // 3 minutes
+        bonus: { type: 'RESOURCE_PRODUCTION', resource: Resource.Kayu, percentage: 10 },
+        dependencies: [],
+        requiredBuildingLevel: { name: BuildingName.Perguruan, level: 1 },
+    },
+    'KEMAJUAN_3': {
+        id: 'KEMAJUAN_3',
+        name: "Arsitektur Dasar",
+        description: "Mempercepat kecepatan pembangunan sebesar 5%.",
+        icon: "📐",
+        category: 'Kemajuan',
+        cost: { resource: Resource.Batu, amount: 3000 },
+        researchTime: 300, // 5 minutes
+        bonus: { type: 'BUILDING_SPEED', percentage: 5 },
+        dependencies: ['KEMAJUAN_1', 'KEMAJUAN_2'],
+        requiredBuildingLevel: { name: BuildingName.Perguruan, level: 2 },
+    },
+    'MILITER_1': {
+        id: 'MILITER_1',
+        name: "Penempaan Pedang",
+        description: "Meningkatkan serangan Prajurit Infanteri sebesar 5%.",
+        icon: "🗡️",
+        category: 'Militer',
+        cost: { resource: Resource.BijihBesi, amount: 2500 },
+        researchTime: 240, // 4 minutes
+        bonus: { type: 'TROOP_ATTACK', troopType: TroopType.PrajuritInfanteri, percentage: 5 },
+        dependencies: [],
+        requiredBuildingLevel: { name: BuildingName.Perguruan, level: 1 },
+    },
+    'MILITER_2': {
+        id: 'MILITER_2',
+        name: "Baju Zirah Kulit",
+        description: "Meningkatkan pertahanan Prajurit Infanteri sebesar 5%.",
+        icon: "🛡️",
+        category: 'Militer',
+        cost: { resource: Resource.Pangan, amount: 3000 },
+        researchTime: 240, // 4 minutes
+        bonus: { type: 'TROOP_DEFENSE', troopType: TroopType.PrajuritInfanteri, percentage: 5 },
+        dependencies: ['MILITER_1'],
+        requiredBuildingLevel: { name: BuildingName.Perguruan, level: 2 },
+    },
 };

@@ -6,12 +6,11 @@ This document outlines the planned and potential future enhancements for the "Sa
 
 These features are essential to complete the primary gameplay loop and introduce strategic depth.
 
-| ID         | Feature                      | Status      | Implemented On |
-| :--------- | :--------------------------- | :---------- | :------------- |
-| **CG-001** | Troop Training & Management  | Not Started | N/A            |
-| **CG-002** | Functional Research System   | Not Started | N/A            |
-| **CG-003** | Warehouse Capacity Logic     | Not Started | N/A            |
-| **CG-004** | Player vs. Player (PvP) Combat | Not Started | N/A            |
+| ID         | Feature                      | Status      | Implemented On             |
+| :--------- | :--------------------------- | :---------- | :------------------------- |
+| **CG-001** | Troop Training & Management  | Not Started | N/A                        |
+| **CG-003** | Warehouse Capacity Logic     | Not Started | N/A                        |
+| **CG-004** | Player vs. Player (PvP) Combat | Not Started | N/A                        |
 
 ---
 
@@ -24,13 +23,6 @@ These features are essential to complete the primary gameplay loop and introduce
     -   Add a `training` type to the global timer system.
     -   Update the `GameState` to reflect newly trained troops upon timer completion.
     -   Display total army composition and power in a dedicated screen or view.
-
-#### CG-002: Functional Research System
--   **Description:** Develop the `ResearchView` from a placeholder into a functional technology tree.
--   **Tasks:**
-    -   Design a technology tree with research items, costs, time requirements, and specific bonuses (e.g., +5% Pangan production, +5% Prajurit Infanteri attack).
-    -   Implement dependencies, requiring players to unlock prerequisite technologies.
-    -   Apply research bonuses to the game loop (e.g., increased resource production, stronger troops).
 
 #### CG-003: Warehouse Capacity Logic
 -   **Description:** Enforce the resource storage limit determined by `Gudang` buildings.

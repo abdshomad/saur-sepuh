@@ -25,10 +25,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ setView, activeView }) => {
         <aside className="w-48 md:w-56 p-4 bg-black bg-opacity-20 h-[calc(100vh-80px)] sticky top-[80px]">
             <nav className="flex flex-col gap-3">
                 <NavItem 
-                    icon="🏙️" 
-                    label={View.Kota} 
-                    onClick={() => setView(View.Kota)} 
-                    isActive={activeView === View.Kota} 
+                    icon="🏰" 
+                    label={View.Kerajaan} 
+                    onClick={() => setView(View.Kerajaan)} 
+                    isActive={activeView === View.Kerajaan} 
                 />
                 <NavItem 
                     icon="🛡️" 
