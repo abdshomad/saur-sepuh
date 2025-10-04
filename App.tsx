@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GameState, Resource, View, GameEvent, TroopType, Building, BuildingName, QuestGoalType } from './types';
-import { INITIAL_GAME_STATE, TECHNOLOGY_TREE, WAREHOUSE_CAPACITY_PER_LEVEL, QUESTS } from './constants';
+import { GameState, Resource, View, GameEvent, TroopType, Building, BuildingName, QuestGoalType, AchievementGoalType } from './types';
+import { INITIAL_GAME_STATE, TECHNOLOGY_TREE, WAREHOUSE_CAPACITY_PER_LEVEL, QUESTS, ACHIEVEMENTS } from './constants';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { CityView } from './components/CityView';
 import { CombatView } from './components/CombatView';
 import { ResearchView } from './components/ResearchView';
+import { AchievementsView } from './components/AchievementsView';
 import { EventModal } from './components/EventModal';
 import { QuestTracker } from './components/QuestTracker';
 import { Toast } from './components/Toast';
@@ -39,6 +40,7 @@ const loadGameState = (): GameState => {
         timers: parsed.timers || INITIAL_GAME_STATE.timers,
         researchedTechnologies: parsed.researchedTechnologies || INITIAL_GAME_STATE.researchedTechnologies,
         currentQuestId: parsed.currentQuestId !== undefined ? parsed.currentQuestId : INITIAL_GAME_STATE.currentQuestId,
+        completedAchievements: parsed.completedAchievements || INITIAL_GAME_STATE.completedAchievements,
         warehouseCapacity: 0, // Akan dihitung ulang di bawah
       };
       // Selalu hitung ulang kapasitas gudang dari data bangunan untuk konsistensi
@@ -234,6 +236,42 @@ const App: React.FC = () => {
                         }
                     }
                 }
+                
+                // Achievement Completion Check
+                let newCompletedAchievements = [...prev.completedAchievements];
+                for (const achievement of Object.values(ACHIEVEMENTS)) {
+                    if (newCompletedAchievements.includes(achievement.id)) {
+                        continue; // Skip already completed
+                    }
+                    
+                    let isAchieved = false;
+                    const { goal } = achievement;
+                    switch (goal.type) {
+                        case AchievementGoalType.BUILDING_LEVEL:
+                            const building = newBuildings.find(b => b.name === goal.buildingName);
+                            if (building && building.level >= goal.target) isAchieved = true;
+                            break;
+                        case AchievementGoalType.TROOP_COUNT:
+                            const troop = newTroops.find(t => t.type === goal.troopType);
+                            if (troop && troop.count >= goal.target) isAchieved = true;
+                            break;
+                        case AchievementGoalType.RESEARCH_COUNT:
+                            if (newResearchedTechnologies.length >= goal.target) isAchieved = true;
+                            break;
+                        case AchievementGoalType.RESOURCE_AMOUNT:
+                            if (goal.resource && newResources[goal.resource] >= goal.target) isAchieved = true;
+                            break;
+                    }
+
+                    if (isAchieved) {
+                        newCompletedAchievements.push(achievement.id);
+                        if (achievement.rewards[Resource.Emas]) {
+                            newResources.Emas += achievement.rewards[Resource.Emas];
+                        }
+                        setToast({ title: "Gelar Kehormatan Diraih!", message: `Anda membuka: ${achievement.title}` });
+                    }
+                }
+
 
                 return {
                     ...prev,
@@ -245,6 +283,7 @@ const App: React.FC = () => {
                     troops: newTroops,
                     warehouseCapacity: newWarehouseCapacity,
                     currentQuestId: newCurrentQuestId,
+                    completedAchievements: newCompletedAchievements,
                 };
             });
         }, 1000);
@@ -290,6 +329,8 @@ const App: React.FC = () => {
                 return <CombatView gameState={gameState} setGameState={setGameState} bonuses={{ troopAttack: bonuses.troopAttack, troopDefense: bonuses.troopDefense }} />;
             case View.Penelitian:
                 return <ResearchView gameState={gameState} setGameState={setGameState} />;
+            case View.Gelar:
+                return <AchievementsView gameState={gameState} />;
             default:
                 return <CityView gameState={gameState} setGameState={setGameState} buildingSpeedBonus={bonuses.buildingSpeed} />;
         }

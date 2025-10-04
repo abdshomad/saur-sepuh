@@ -42,6 +42,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ setView, activeView }) => {
                     onClick={() => setView(View.Penelitian)} 
                     isActive={activeView === View.Penelitian}
                 />
+                <NavItem 
+                    icon="🎖️" 
+                    label={View.Gelar} 
+                    onClick={() => setView(View.Gelar)} 
+                    isActive={activeView === View.Gelar}
+                />
             </nav>
         </aside>
     );

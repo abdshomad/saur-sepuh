@@ -1,4 +1,4 @@
-import { GameState, BuildingName, TroopType, Resource, Technology, Quest, QuestGoalType } from './types';
+import { GameState, BuildingName, TroopType, Resource, Technology, Quest, QuestGoalType, Achievement, AchievementGoalType } from './types';
 
 export const WAREHOUSE_CAPACITY_PER_LEVEL = 50000;
 
@@ -80,6 +80,41 @@ export const QUESTS: Record<string, Quest> = {
     },
 };
 
+export const ACHIEVEMENTS: Record<string, Achievement> = {
+    'ACH_BUILD_1': {
+        id: 'ACH_BUILD_1',
+        title: "Arsitek Madangkara",
+        description: "Tingkatkan Istana hingga Tingkat 5.",
+        icon: '👑',
+        goal: { type: AchievementGoalType.BUILDING_LEVEL, buildingName: BuildingName.Istana, target: 5 },
+        rewards: { [Resource.Emas]: 100 }
+    },
+    'ACH_TROOP_1': {
+        id: 'ACH_TROOP_1',
+        title: "Panglima Perang",
+        description: "Latih total 1,000 Prajurit Infanteri.",
+        icon: '⚔️',
+        goal: { type: AchievementGoalType.TROOP_COUNT, troopType: TroopType.PrajuritInfanteri, target: 1000 },
+        rewards: { [Resource.Emas]: 100 }
+    },
+    'ACH_RESEARCH_1': {
+        id: 'ACH_RESEARCH_1',
+        title: "Cendekiawan Agung",
+        description: "Selesaikan 3 penelitian di Perguruan.",
+        icon: '🧠',
+        goal: { type: AchievementGoalType.RESEARCH_COUNT, target: 3 },
+        rewards: { [Resource.Emas]: 150 }
+    },
+    'ACH_RESOURCE_1': {
+        id: 'ACH_RESOURCE_1',
+        title: "Lumbung Emas",
+        description: "Kumpulkan 100,000 Pangan.",
+        icon: '🍞',
+        goal: { type: AchievementGoalType.RESOURCE_AMOUNT, resource: Resource.Pangan, target: 100000 },
+        rewards: { [Resource.Emas]: 50 }
+    },
+};
+
 export const INITIAL_GAME_STATE: GameState = {
     player: {
         name: 'Brama Kumbara',
@@ -121,6 +156,7 @@ export const INITIAL_GAME_STATE: GameState = {
     timers: [],
     researchedTechnologies: [],
     currentQuestId: 'QUEST_1',
+    completedAchievements: [],
 };
 
 export const BUILDING_UPGRADE_COST: Record<BuildingName, { resource: Resource, baseCost: number, growthFactor: number }> = {

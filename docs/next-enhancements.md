@@ -28,7 +28,6 @@ Features to keep players invested and returning to the game.
 | :--------- | :------------------------------ | :---------- | :------------- |
 | **PP-002** | Alliances (Kadipaten / Paguronan) | Not Started | N/A            |
 | **PP-003** | Leaderboards                    | Not Started | N/A            |
-| **PP-004** | Achievements (Gelar Kehormatan) | Not Started | N/A            |
 
 ---
 
@@ -45,13 +44,6 @@ Features to keep players invested and returning to the game.
 -   **Description:** Add global rankings to foster competition.
 -   **Tasks:**
     -   Design and implement a UI to display rankings for player level, army power, or PvE victories.
-
-#### PP-004: Achievements (Gelar Kehormatan)
--   **Description:** Define a set of milestones that grant players permanent titles or small rewards.
--   **Tasks:**
-    -   Create a list of achievable milestones (e.g., "Reach Istana Level 10").
-    -   Track player progress towards these achievements.
-    -   Create a UI to display completed and in-progress achievements.
 
 ---
 

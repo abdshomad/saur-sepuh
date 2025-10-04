@@ -33,12 +33,20 @@ export enum View {
     Kerajaan = 'Kerajaan',
     Pertempuran = 'Pertempuran',
     Penelitian = 'Penelitian',
+    Gelar = 'Gelar',
 }
 
 export enum QuestGoalType {
     BUILDING_LEVEL = 'BUILDING_LEVEL',
     TROOP_COUNT = 'TROOP_COUNT',
     RESEARCH_TECH = 'RESEARCH_TECH',
+}
+
+export enum AchievementGoalType {
+    BUILDING_LEVEL = 'BUILDING_LEVEL',
+    TROOP_COUNT = 'TROOP_COUNT',
+    RESEARCH_COUNT = 'RESEARCH_COUNT',
+    RESOURCE_AMOUNT = 'RESOURCE_AMOUNT',
 }
 
 export interface Quest {
@@ -113,6 +121,23 @@ export interface Technology {
     requiredBuildingLevel: { name: BuildingName; level: number };
 }
 
+export interface Achievement {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    goal: {
+        type: AchievementGoalType;
+        buildingName?: BuildingName;
+        troopType?: TroopType;
+        resource?: Resource;
+        target: number;
+    };
+    rewards: {
+        [Resource.Emas]?: number;
+    };
+}
+
 export interface GameState {
     player: Player;
     resources: Record<Resource, number>;
@@ -122,6 +147,7 @@ export interface GameState {
     timers: Timer[];
     researchedTechnologies: string[];
     currentQuestId: string | null;
+    completedAchievements: string[];
 }
 
 export interface GameEvent {

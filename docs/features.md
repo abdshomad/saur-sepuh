@@ -61,6 +61,7 @@ This document provides a comprehensive list of all features currently implemente
 | ID         | Feature                         | Status      | Implemented On             |
 | :--------- | :------------------------------ | :---------- | :------------------------- |
 | **PP-001** | Quests & Missions (Titah Prabu) | Implemented | 2024-08-09T15:00:00.000Z |
+| **PP-004** | Achievements (Gelar Kehormatan) | Implemented | 2024-08-10T11:00:00.000Z |
 
 ---
 
@@ -68,6 +69,9 @@ This document provides a comprehensive list of all features currently implemente
 
 #### PP-001: Quests & Missions (Titah Prabu)
 -   **Description:** The game now features a guided quest system, called "Titah Prabu" (The King's Decree), to help onboard new players and provide continuous goals. A dedicated UI component tracks the player's progress on the current quest, showing the objective and rewards. The game automatically checks for quest completion and grants rewards, then progresses to the next quest in the chain.
+
+#### PP-004: Achievements (Gelar Kehormatan)
+-   **Description:** Defines a set of milestones that grant players rewards (e.g., Emas). The game automatically tracks player progress towards these achievements in the background. A dedicated "Gelar" view allows players to see their unlocked achievements and their progress towards locked ones. A toast notification appears when an achievement is unlocked.
 
 ---
 
