@@ -56,6 +56,21 @@ This document provides a comprehensive list of all features currently implemente
 
 ---
 
+## 📈 Player Progression & Engagement
+
+| ID         | Feature                         | Status      | Implemented On             |
+| :--------- | :------------------------------ | :---------- | :------------------------- |
+| **PP-001** | Quests & Missions (Titah Prabu) | Implemented | 2024-08-09T15:00:00.000Z |
+
+---
+
+### Feature Details
+
+#### PP-001: Quests & Missions (Titah Prabu)
+-   **Description:** The game now features a guided quest system, called "Titah Prabu" (The King's Decree), to help onboard new players and provide continuous goals. A dedicated UI component tracks the player's progress on the current quest, showing the objective and rewards. The game automatically checks for quest completion and grants rewards, then progresses to the next quest in the chain.
+
+---
+
 ## ✨ User Interface & Experience
 
 | ID         | Feature                           | Status      | Implemented On             |

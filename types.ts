@@ -35,6 +35,30 @@ export enum View {
     Penelitian = 'Penelitian',
 }
 
+export enum QuestGoalType {
+    BUILDING_LEVEL = 'BUILDING_LEVEL',
+    TROOP_COUNT = 'TROOP_COUNT',
+    RESEARCH_TECH = 'RESEARCH_TECH',
+}
+
+export interface Quest {
+    id: string;
+    title: string;
+    description: string;
+    goal: {
+        type: QuestGoalType;
+        buildingName?: BuildingName;
+        troopType?: TroopType;
+        techId?: string;
+        target: number;
+    };
+    rewards: {
+        experience: number;
+        resources: Partial<Record<Resource, number>>;
+    };
+    nextQuestId: string | null;
+}
+
 export interface Player {
     name: string;
     level: number;
@@ -97,6 +121,7 @@ export interface GameState {
     troops: Troop[];
     timers: Timer[];
     researchedTechnologies: string[];
+    currentQuestId: string | null;
 }
 
 export interface GameEvent {

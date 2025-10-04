@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GameState, Resource, View, GameEvent, TroopType, Building, BuildingName } from './types';
-import { INITIAL_GAME_STATE, TECHNOLOGY_TREE, WAREHOUSE_CAPACITY_PER_LEVEL } from './constants';
+import { GameState, Resource, View, GameEvent, TroopType, Building, BuildingName, QuestGoalType } from './types';
+import { INITIAL_GAME_STATE, TECHNOLOGY_TREE, WAREHOUSE_CAPACITY_PER_LEVEL, QUESTS } from './constants';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { CityView } from './components/CityView';
 import { CombatView } from './components/CombatView';
 import { ResearchView } from './components/ResearchView';
 import { EventModal } from './components/EventModal';
+import { QuestTracker } from './components/QuestTracker';
+import { Toast } from './components/Toast';
 import { generateGameEvent } from './services/geminiService';
 
 const LOCAL_STORAGE_KEY = 'saur_sepuh_game_state';
@@ -36,6 +38,7 @@ const loadGameState = (): GameState => {
         troops: parsed.troops || INITIAL_GAME_STATE.troops,
         timers: parsed.timers || INITIAL_GAME_STATE.timers,
         researchedTechnologies: parsed.researchedTechnologies || INITIAL_GAME_STATE.researchedTechnologies,
+        currentQuestId: parsed.currentQuestId !== undefined ? parsed.currentQuestId : INITIAL_GAME_STATE.currentQuestId,
         warehouseCapacity: 0, // Akan dihitung ulang di bawah
       };
       // Selalu hitung ulang kapasitas gudang dari data bangunan untuk konsistensi
@@ -95,6 +98,7 @@ const App: React.FC = () => {
     const [view, setView] = useState<View>(View.Kerajaan);
     const [activeEvent, setActiveEvent] = useState<GameEvent | null>(null);
     const [isEventLoading, setIsEventLoading] = useState<boolean>(false);
+    const [toast, setToast] = useState<{ title: string; message: string } | null>(null);
 
     // Efek untuk menyimpan state permainan ke local storage setiap kali berubah
     useEffect(() => {
@@ -124,7 +128,7 @@ const App: React.FC = () => {
         const gameLoop = setInterval(() => {
             setGameState(prev => {
                 const currentBonuses = calculateBonuses(prev.researchedTechnologies);
-                const newResources = { ...prev.resources };
+                let newResources = { ...prev.resources };
                 let panganProduction = 0;
                 let kayuProduction = 0;
                 let batuProduction = 0;
@@ -192,6 +196,44 @@ const App: React.FC = () => {
                 newResources.Kayu = Math.min(prev.warehouseCapacity, newResources.Kayu + kayuProduction);
                 newResources.Batu = Math.min(prev.warehouseCapacity, newResources.Batu + batuProduction);
                 newResources.BijihBesi = Math.min(prev.warehouseCapacity, newResources.BijihBesi + bijihBesiProduction);
+                
+                // Quest Completion Check
+                let newCurrentQuestId = prev.currentQuestId;
+                if (prev.currentQuestId) {
+                    const quest = QUESTS[prev.currentQuestId];
+                    if (quest) {
+                        let isCompleted = false;
+                        const { goal } = quest;
+
+                        switch (goal.type) {
+                            case QuestGoalType.BUILDING_LEVEL:
+                                const building = newBuildings.find(b => b.name === goal.buildingName);
+                                if (building && building.level >= goal.target) isCompleted = true;
+                                break;
+                            case QuestGoalType.TROOP_COUNT:
+                                const troop = newTroops.find(t => t.type === goal.troopType);
+                                if (troop && troop.count >= goal.target) isCompleted = true;
+                                break;
+                            case QuestGoalType.RESEARCH_TECH:
+                                if (newResearchedTechnologies.includes(goal.techId!)) isCompleted = true;
+                                break;
+                        }
+
+                        if (isCompleted) {
+                            newPlayer.experience += quest.rewards.experience;
+                            for (const [res, amount] of Object.entries(quest.rewards.resources)) {
+                                const resourceKey = res as Resource;
+                                let newAmount = newResources[resourceKey] + amount;
+                                if (resourceKey !== Resource.Emas) {
+                                    newAmount = Math.min(newWarehouseCapacity > 0 ? newWarehouseCapacity : prev.warehouseCapacity, newAmount);
+                                }
+                                newResources[resourceKey] = newAmount;
+                            }
+                            setToast({ title: "Titah Prabu Selesai!", message: `Anda menerima ${quest.rewards.experience} EXP dan sumber daya.` });
+                            newCurrentQuestId = quest.nextQuestId;
+                        }
+                    }
+                }
 
                 return {
                     ...prev,
@@ -202,6 +244,7 @@ const App: React.FC = () => {
                     researchedTechnologies: newResearchedTechnologies,
                     troops: newTroops,
                     warehouseCapacity: newWarehouseCapacity,
+                    currentQuestId: newCurrentQuestId,
                 };
             });
         }, 1000);
@@ -252,6 +295,8 @@ const App: React.FC = () => {
         }
     };
 
+    const currentQuest = gameState.currentQuestId ? QUESTS[gameState.currentQuestId] : null;
+
     return (
         <div className="bg-gray-900 text-white min-h-screen font-sans bg-cover bg-center" style={{backgroundImage: "url('https://picsum.photos/seed/madangkara/1920/1080')"}}>
             <div className="bg-black bg-opacity-70 min-h-screen">
@@ -259,6 +304,7 @@ const App: React.FC = () => {
                 <div className="flex">
                     <Sidebar setView={setView} activeView={view} />
                     <main className="flex-1 p-4 md:p-6 lg:p-8">
+                        {currentQuest && <QuestTracker quest={currentQuest} gameState={gameState} />}
                         {renderView()}
                     </main>
                 </div>
@@ -267,6 +313,13 @@ const App: React.FC = () => {
                         event={activeEvent}
                         onChoice={handleEventChoice}
                         onClose={() => setActiveEvent(null)}
+                    />
+                )}
+                {toast && (
+                    <Toast 
+                        title={toast.title}
+                        message={toast.message}
+                        onClose={() => setToast(null)}
                     />
                 )}
             </div>

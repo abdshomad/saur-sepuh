@@ -26,7 +26,6 @@ Features to keep players invested and returning to the game.
 
 | ID         | Feature                         | Status      | Implemented On |
 | :--------- | :------------------------------ | :---------- | :------------- |
-| **PP-001** | Quests & Missions (Titah Prabu) | Not Started | N/A            |
 | **PP-002** | Alliances (Kadipaten / Paguronan) | Not Started | N/A            |
 | **PP-003** | Leaderboards                    | Not Started | N/A            |
 | **PP-004** | Achievements (Gelar Kehormatan) | Not Started | N/A            |
@@ -34,13 +33,6 @@ Features to keep players invested and returning to the game.
 ---
 
 ### Feature Details
-
-#### PP-001: Quests & Missions (Titah Prabu)
--   **Description:** Create a guided quest system to onboard new players and provide continuous goals.
--   **Tasks:**
-    -   Design a list of quests (e.g., "Upgrade Sawah to Level 5").
-    -   Create a UI element to display current quests and progress.
-    -   Implement a reward system (resources, experience) upon quest completion.
 
 #### PP-002: Alliances (Kadipaten / Paguronan)
 -   **Description:** Introduce social features allowing players to form or join alliances.

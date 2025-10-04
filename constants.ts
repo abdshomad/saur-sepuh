@@ -1,4 +1,4 @@
-import { GameState, BuildingName, TroopType, Resource, Technology } from './types';
+import { GameState, BuildingName, TroopType, Resource, Technology, Quest, QuestGoalType } from './types';
 
 export const WAREHOUSE_CAPACITY_PER_LEVEL = 50000;
 
@@ -53,6 +53,33 @@ export const BUILDING_TO_TROOP_MAP: Partial<Record<BuildingName, TroopType>> = {
 
 export const MILITARY_BUILDINGS = Object.keys(BUILDING_TO_TROOP_MAP) as BuildingName[];
 
+export const QUESTS: Record<string, Quest> = {
+    'QUEST_1': {
+        id: 'QUEST_1',
+        title: "Fondasi Pangan",
+        description: "Sang Prabu, lumbung kita perlu diperkuat. Tingkatkan Sawah hingga Tingkat 3 untuk memastikan pasokan pangan bagi rakyat dan prajurit.",
+        goal: { type: QuestGoalType.BUILDING_LEVEL, buildingName: BuildingName.Sawah, target: 3 },
+        rewards: { experience: 100, resources: { [Resource.Kayu]: 500, [Resource.Emas]: 10 } },
+        nextQuestId: 'QUEST_2',
+    },
+    'QUEST_2': {
+        id: 'QUEST_2',
+        title: "Garda Madangkara",
+        description: "Ancaman para durjana selalu mengintai. Latihlah 200 Prajurit Infanteri untuk menjaga keamanan ibukota.",
+        goal: { type: QuestGoalType.TROOP_COUNT, troopType: TroopType.PrajuritInfanteri, target: 200 },
+        rewards: { experience: 250, resources: { [Resource.Pangan]: 1000, [Resource.Emas]: 25 } },
+        nextQuestId: 'QUEST_3',
+    },
+     'QUEST_3': {
+        id: 'QUEST_3',
+        title: "Ilmu Kanuragan",
+        description: "Pengetahuan adalah kekuatan. Teliti 'Penempaan Pedang' di Perguruan untuk memperkuat bilah senjata para prajurit.",
+        goal: { type: QuestGoalType.RESEARCH_TECH, techId: 'MILITER_1', target: 1 },
+        rewards: { experience: 500, resources: { [Resource.BijihBesi]: 1500, [Resource.Emas]: 50 } },
+        nextQuestId: null,
+    },
+};
+
 export const INITIAL_GAME_STATE: GameState = {
     player: {
         name: 'Brama Kumbara',
@@ -93,6 +120,7 @@ export const INITIAL_GAME_STATE: GameState = {
     })),
     timers: [],
     researchedTechnologies: [],
+    currentQuestId: 'QUEST_1',
 };
 
 export const BUILDING_UPGRADE_COST: Record<BuildingName, { resource: Resource, baseCost: number, growthFactor: number }> = {
