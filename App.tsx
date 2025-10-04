@@ -9,6 +9,35 @@ import { ResearchView } from './components/ResearchView';
 import { EventModal } from './components/EventModal';
 import { generateGameEvent } from './services/geminiService';
 
+const LOCAL_STORAGE_KEY = 'saur_sepuh_game_state';
+
+const loadGameState = (): GameState => {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Gabungkan dengan state awal untuk memastikan properti baru ditambahkan
+      // jika state yang disimpan berasal dari versi yang lebih lama.
+      const mergedState = {
+        ...INITIAL_GAME_STATE,
+        ...parsed,
+        player: { ...INITIAL_GAME_STATE.player, ...(parsed.player || {}) },
+        resources: { ...INITIAL_GAME_STATE.resources, ...(parsed.resources || {}) },
+        buildings: parsed.buildings || INITIAL_GAME_STATE.buildings,
+        troops: parsed.troops || INITIAL_GAME_STATE.troops,
+        timers: parsed.timers || INITIAL_GAME_STATE.timers,
+        researchedTechnologies: parsed.researchedTechnologies || INITIAL_GAME_STATE.researchedTechnologies,
+      };
+      return mergedState;
+    }
+  } catch (e) {
+    console.error("Tidak dapat memuat state permainan dari local storage, memulai dari awal.", e);
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  }
+  return INITIAL_GAME_STATE;
+};
+
+
 const calculateBonuses = (researchedTechnologies: string[]) => {
     const bonuses = {
         resourceProduction: {} as Record<Resource, number>,
@@ -47,10 +76,19 @@ const calculateBonuses = (researchedTechnologies: string[]) => {
 
 
 const App: React.FC = () => {
-    const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+    const [gameState, setGameState] = useState<GameState>(loadGameState);
     const [view, setView] = useState<View>(View.Kerajaan);
     const [activeEvent, setActiveEvent] = useState<GameEvent | null>(null);
     const [isEventLoading, setIsEventLoading] = useState<boolean>(false);
+
+    // Efek untuk menyimpan state permainan ke local storage setiap kali berubah
+    useEffect(() => {
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState));
+        } catch (e) {
+            console.error("Tidak dapat menyimpan state permainan ke local storage", e);
+        }
+    }, [gameState]);
 
     const triggerRandomEvent = useCallback(async () => {
         if (isEventLoading) return;

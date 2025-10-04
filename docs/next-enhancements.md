@@ -125,22 +125,14 @@ Polishing features to make the game feel more professional and immersive.
 
 Crucial "under-the-hood" changes for a scalable and robust application.
 
-| ID         | Feature                       | Status      | Implemented On |
-| :--------- | :---------------------------- | :---------- | :------------- |
-| **TA-001** | State Persistence (Critical)  | Not Started | N/A            |
-| **TA-002** | Backend Server                | Not Started | N/A            |
-| **TA-003** | Dedicated State Management    | Not Started | N/A            |
+| ID         | Feature                    | Status      | Implemented On |
+| :--------- | :------------------------- | :---------- | :------------- |
+| **TA-002** | Backend Server             | Not Started | N/A            |
+| **TA-003** | Dedicated State Management | Not Started | N/A            |
 
 ---
 
 ### Feature Details
-
-#### TA-001: State Persistence (Critical)
--   **Description:** Save game state to `localStorage` to prevent progress loss on page refresh.
--   **Priority:** Highest technical priority.
--   **Tasks:**
-    -   Implement a function to serialize and save the entire `gameState` to `localStorage` whenever it changes.
-    -   On application start, check for and load the state from `localStorage`.
 
 #### TA-002: Backend Server
 -   **Description:** Create a backend service for a true multiplayer experience and to secure the application.

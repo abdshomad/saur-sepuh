@@ -76,3 +76,18 @@ This document provides a comprehensive list of all features currently implemente
 
 #### UX-105: Technology Tree (Visual Placeholder)
 -   **Description:** A dedicated "Penelitian" view exists with a placeholder UI for the technology tree. While not functional, it establishes the location and visual framework for a future research system.
+
+---
+
+## 🔧 Technical & Architectural
+
+| ID         | Feature                       | Status      | Implemented On             |
+| :--------- | :---------------------------- | :---------- | :------------------------- |
+| **TA-101** | State Persistence             | Implemented | 2024-08-07T09:00:00.000Z |
+
+---
+
+### Feature Details
+
+#### TA-101: State Persistence
+-   **Description:** The game automatically saves its state to the browser's `localStorage`. This ensures that player progress is not lost upon refreshing or closing the browser tab. The game state is loaded automatically when the application starts.
