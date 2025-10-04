@@ -9,7 +9,7 @@ These features are essential to complete the primary gameplay loop and introduce
 | ID         | Feature                      | Status      | Implemented On             |
 | :--------- | :--------------------------- | :---------- | :------------------------- |
 | **CG-001** | Troop Training & Management  | Implemented | 2024-08-07T14:00:00.000Z   |
-| **CG-003** | Warehouse Capacity Logic     | Not Started | N/A                        |
+| **CG-003** | Warehouse Capacity Logic     | Implemented | 2024-08-08T10:00:00.000Z   |
 | **CG-004** | Player vs. Player (PvP) Combat | Not Started | N/A                        |
 
 ---
@@ -27,7 +27,7 @@ These features are essential to complete the primary gameplay loop and introduce
 #### CG-003: Warehouse Capacity Logic
 -   **Description:** Enforce the resource storage limit determined by `Gudang` buildings.
 -   **Tasks:**
-    -   Update the main game loop to cap resource generation when `warehouseCapacity` is reached for each resource type.
+    -   Update the main game loop to dynamically calculate `warehouseCapacity` based on Gudang level.
     -   Provide clear UI feedback to the player when a resource is capped.
 
 #### CG-004: Player vs. Player (PvP) Combat

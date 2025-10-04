@@ -1,5 +1,7 @@
 import { GameState, BuildingName, TroopType, Resource, Technology } from './types';
 
+export const WAREHOUSE_CAPACITY_PER_LEVEL = 50000;
+
 export const TROOP_STATS: Record<TroopType, {
     cost: Partial<Record<Resource, number>>;
     time: number; // seconds per unit
@@ -67,7 +69,7 @@ export const INITIAL_GAME_STATE: GameState = {
         [Resource.BijihBesi]: 5000,
         [Resource.Emas]: 500,
     },
-    warehouseCapacity: 50000,
+    warehouseCapacity: 0, // Dihitung saat startup berdasarkan level Gudang
     buildings: [
         { id: 1, name: BuildingName.Istana, level: 1, description: "Jantung kerajaanmu. Meningkatkannya akan membuka bangunan dan fitur baru.", icon: "🏰" },
         { id: 2, name: BuildingName.Sawah, level: 1, description: "Menghasilkan Pangan untuk prajurit dan rakyatmu.", icon: "🌾" },
@@ -80,7 +82,7 @@ export const INITIAL_GAME_STATE: GameState = {
         { id: 9, name: BuildingName.BengkelSenjata, level: 0, description: "Menciptakan Mesin Pengepung.", icon: "⚙️" },
         { id: 10, name: BuildingName.Perguruan, level: 1, description: "Teliti teknologi dan ilmu kanuragan di sini.", icon: "📜" },
         { id: 11, name: BuildingName.Benteng, level: 1, description: "Mempertahankan kotamu dari penyerbu.", icon: "🧱" },
-        { id: 12, name: BuildingName.Gudang, level: 1, description: "Melindungi sumber dayamu dari penjarahan.", icon: "📦" },
+        { id: 12, name: BuildingName.Gudang, level: 1, description: "Meningkatkan kapasitas penyimpanan dan melindungi sumber dayamu dari penjarahan.", icon: "📦" },
         { id: 13, name: BuildingName.Tabib, level: 1, description: "Menyembuhkan prajuritmu yang terluka.", icon: "⚕️" },
     ],
     troops: Object.values(TroopType).map(type => ({

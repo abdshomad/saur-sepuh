@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GameState, Resource, View, GameEvent, TroopType } from './types';
-import { INITIAL_GAME_STATE, TECHNOLOGY_TREE } from './constants';
+import { GameState, Resource, View, GameEvent, TroopType, Building, BuildingName } from './types';
+import { INITIAL_GAME_STATE, TECHNOLOGY_TREE, WAREHOUSE_CAPACITY_PER_LEVEL } from './constants';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { CityView } from './components/CityView';
@@ -11,6 +11,15 @@ import { generateGameEvent } from './services/geminiService';
 
 const LOCAL_STORAGE_KEY = 'saur_sepuh_game_state';
 
+const calculateWarehouseCapacity = (buildings: Building[]): number => {
+    return buildings.reduce((total, building) => {
+        if (building.name === BuildingName.Gudang) {
+            return total + (building.level * WAREHOUSE_CAPACITY_PER_LEVEL);
+        }
+        return total;
+    }, 0);
+};
+
 const loadGameState = (): GameState => {
   try {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -18,7 +27,7 @@ const loadGameState = (): GameState => {
       const parsed = JSON.parse(saved);
       // Gabungkan dengan state awal untuk memastikan properti baru ditambahkan
       // jika state yang disimpan berasal dari versi yang lebih lama.
-      const mergedState = {
+      const mergedState: GameState = {
         ...INITIAL_GAME_STATE,
         ...parsed,
         player: { ...INITIAL_GAME_STATE.player, ...(parsed.player || {}) },
@@ -27,14 +36,20 @@ const loadGameState = (): GameState => {
         troops: parsed.troops || INITIAL_GAME_STATE.troops,
         timers: parsed.timers || INITIAL_GAME_STATE.timers,
         researchedTechnologies: parsed.researchedTechnologies || INITIAL_GAME_STATE.researchedTechnologies,
+        warehouseCapacity: 0, // Akan dihitung ulang di bawah
       };
+      // Selalu hitung ulang kapasitas gudang dari data bangunan untuk konsistensi
+      mergedState.warehouseCapacity = calculateWarehouseCapacity(mergedState.buildings);
       return mergedState;
     }
   } catch (e) {
     console.error("Tidak dapat memuat state permainan dari local storage, memulai dari awal.", e);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   }
-  return INITIAL_GAME_STATE;
+  // Untuk permainan baru, hitung juga dari bangunan awal
+  const initialState = { ...INITIAL_GAME_STATE };
+  initialState.warehouseCapacity = calculateWarehouseCapacity(initialState.buildings);
+  return initialState;
 };
 
 
@@ -136,11 +151,6 @@ const App: React.FC = () => {
                     }
                 });
 
-                newResources.Pangan = Math.min(prev.warehouseCapacity, newResources.Pangan + panganProduction);
-                newResources.Kayu = Math.min(prev.warehouseCapacity, newResources.Kayu + kayuProduction);
-                newResources.Batu = Math.min(prev.warehouseCapacity, newResources.Batu + batuProduction);
-                newResources.BijihBesi = Math.min(prev.warehouseCapacity, newResources.BijihBesi + bijihBesiProduction);
-
                 const newTimers = prev.timers.map(timer => ({ ...timer, timeLeft: timer.timeLeft - 1 })).filter(timer => timer.timeLeft > 0);
                 const finishedTimers = prev.timers.filter(timer => timer.timeLeft <= 1);
                 
@@ -148,9 +158,13 @@ const App: React.FC = () => {
                 let newPlayer = {...prev.player};
                 let newResearchedTechnologies = [...prev.researchedTechnologies];
                 let newTroops = [...prev.troops];
+                let warehouseCapacityNeedsUpdate = false;
 
                 finishedTimers.forEach(timer => {
                     if (timer.type === 'building') {
+                        if (timer.details.name === BuildingName.Gudang) {
+                            warehouseCapacityNeedsUpdate = true;
+                        }
                         newBuildings = newBuildings.map(b => b.id === timer.id ? { ...b, level: b.level + 1 } : b);
                         if (timer.details.name === 'Istana') {
                             newPlayer.istanaLevel += 1;
@@ -167,6 +181,17 @@ const App: React.FC = () => {
                         );
                     }
                 });
+                
+                const newWarehouseCapacity = warehouseCapacityNeedsUpdate
+                    ? calculateWarehouseCapacity(newBuildings)
+                    : prev.warehouseCapacity;
+
+                // Batasi penambahan sumber daya dengan kapasitas gudang dari tick SEBELUMNYA.
+                // Kapasitas baru akan berlaku pada tick berikutnya.
+                newResources.Pangan = Math.min(prev.warehouseCapacity, newResources.Pangan + panganProduction);
+                newResources.Kayu = Math.min(prev.warehouseCapacity, newResources.Kayu + kayuProduction);
+                newResources.Batu = Math.min(prev.warehouseCapacity, newResources.Batu + batuProduction);
+                newResources.BijihBesi = Math.min(prev.warehouseCapacity, newResources.BijihBesi + bijihBesiProduction);
 
                 return {
                     ...prev,
@@ -176,6 +201,7 @@ const App: React.FC = () => {
                     player: newPlayer,
                     researchedTechnologies: newResearchedTechnologies,
                     troops: newTroops,
+                    warehouseCapacity: newWarehouseCapacity,
                 };
             });
         }, 1000);
@@ -199,6 +225,13 @@ const App: React.FC = () => {
             const newResources = { ...prev.resources };
             consequences.forEach(c => {
                 newResources[c.resource] = Math.max(0, newResources[c.resource] + c.amount);
+            });
+             // Pastikan sumber daya tidak melebihi kapasitas setelah event
+            Object.keys(newResources).forEach(key => {
+                const resourceKey = key as Resource;
+                if (resourceKey !== Resource.Emas) {
+                    newResources[resourceKey] = Math.min(prev.warehouseCapacity, newResources[resourceKey]);
+                }
             });
             return { ...prev, resources: newResources };
         });
